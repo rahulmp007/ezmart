@@ -31,5 +31,6 @@ class Product extends Equatable {
     category,
     image,
     rating,
+    stockRemaining
   ];
 }
