@@ -21,7 +21,11 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       );
       final data = response as List;
       return data
-          .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => ProductModel.fromJson(
+              e as Map<String, dynamic>,
+            ).copyWith(stockRemaining: 50),
+          )
           .toList();
     } catch (e) {
       throw ErrorHandler.handle(e);

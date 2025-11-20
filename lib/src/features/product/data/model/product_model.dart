@@ -1,6 +1,5 @@
 import 'package:ezmart/src/features/product/data/model/rating_model.dart';
 import 'package:ezmart/src/features/product/domain/entity/product.dart';
-import 'package:ezmart/src/features/product/domain/entity/rating.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -42,7 +41,7 @@ class ProductModel {
 
   Map<String, dynamic> toJson() => _$ProductModelToJson(this);
 
-  Product toEntity({required int stockRemaining}) => Product(
+  Product toEntity({int? stockRemaining}) => Product(
     id: id,
     title: title,
     description: description,

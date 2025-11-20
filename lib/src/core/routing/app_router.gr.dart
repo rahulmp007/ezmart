@@ -15,6 +15,13 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
+    ProductDetail.name: (routeData) {
+      final args = routeData.argsAs<ProductDetailArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ProductDetailPage(key: args.key, product: args.product),
+      );
+    },
     ProductListing.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -31,13 +38,43 @@ abstract class _$AppRouter extends RootStackRouter {
 }
 
 /// generated route for
+/// [ProductDetailPage]
+class ProductDetail extends PageRouteInfo<ProductDetailArgs> {
+  ProductDetail({
+    Key? key,
+    required Product product,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ProductDetail.name,
+         args: ProductDetailArgs(key: key, product: product),
+         initialChildren: children,
+       );
+
+  static const String name = 'ProductDetail';
+
+  static const PageInfo<ProductDetailArgs> page = PageInfo<ProductDetailArgs>(
+    name,
+  );
+}
+
+class ProductDetailArgs {
+  const ProductDetailArgs({this.key, required this.product});
+
+  final Key? key;
+
+  final Product product;
+
+  @override
+  String toString() {
+    return 'ProductDetailArgs{key: $key, product: $product}';
+  }
+}
+
+/// generated route for
 /// [ProductListPage]
 class ProductListing extends PageRouteInfo<void> {
   const ProductListing({List<PageRouteInfo>? children})
-      : super(
-          ProductListing.name,
-          initialChildren: children,
-        );
+    : super(ProductListing.name, initialChildren: children);
 
   static const String name = 'ProductListing';
 
@@ -48,10 +85,7 @@ class ProductListing extends PageRouteInfo<void> {
 /// [Splash]
 class SplashRoute extends PageRouteInfo<void> {
   const SplashRoute({List<PageRouteInfo>? children})
-      : super(
-          SplashRoute.name,
-          initialChildren: children,
-        );
+    : super(SplashRoute.name, initialChildren: children);
 
   static const String name = 'SplashRoute';
 
