@@ -41,17 +41,6 @@ class ProductModel {
 
   Map<String, dynamic> toJson() => _$ProductModelToJson(this);
 
-  Product toEntity({int? stockRemaining}) => Product(
-    id: id,
-    title: title,
-    description: description,
-    category: category,
-    image: image,
-    price: price,
-    rating: rating?.toEntity(),
-    stockRemaining: stockRemaining,
-  );
-
   ProductModel copyWith({
     int? id,
     String? title,
@@ -72,5 +61,10 @@ class ProductModel {
       rating: rating ?? this.rating,
       stockRemaining: stockRemaining ?? this.stockRemaining,
     );
+  }
+
+  @override
+  String toString() {
+    return 'ProductModel(id: $id,stockRemaining: $stockRemaining)';
   }
 }

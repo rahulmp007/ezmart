@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:ezmart/src/features/cart/data/models/cart_item_model.dart';
 import 'package:ezmart/src/features/product/data/model/product_model.dart';
 import 'package:ezmart/src/features/product/data/model/rating_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,6 +12,8 @@ class HiveService {
       await Hive.initFlutter(dir.path);
       Hive.registerAdapter(ProductModelAdapter());
       Hive.registerAdapter(RatingModelAdapter());
+      Hive.registerAdapter(CartItemModelAdapter());
+      
     } on Exception catch (e) {
       log('hive init error: $e');
     }
