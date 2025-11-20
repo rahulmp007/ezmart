@@ -1,5 +1,6 @@
 import 'package:ezmart/src/core/network/api_client.dart';
 import 'package:ezmart/src/core/service/local_storage.dart';
+import 'package:ezmart/src/features/product/application/product_stock_service.dart';
 import 'package:ezmart/src/features/product/data/datasources/product_local_datasource.dart';
 import 'package:ezmart/src/features/product/data/datasources/product_remote_datasource.dart';
 import 'package:ezmart/src/features/product/data/repository/product_repository_impl.dart';
@@ -28,15 +29,19 @@ Future<void> initProduct() async {
     ),
   );
 
-  sl.registerFactory(
+  sl.registerLazySingleton<ProductStockService>(
+    () => ProductStockService(repository: sl<ProductRepository>()),
+  );
+
+  sl.registerLazySingleton(
     () => GetProductsUsecase(repository: sl<ProductRepository>()),
   );
 
-   sl.registerFactory(
+  sl.registerLazySingleton(
     () => GetProductByIdUseCase(repository: sl<ProductRepository>()),
   );
 
-   sl.registerFactory(
+  sl.registerLazySingleton(
     () => UpdateStockUseCase(repository: sl<ProductRepository>()),
   );
 

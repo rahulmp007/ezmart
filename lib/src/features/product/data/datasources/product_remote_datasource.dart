@@ -26,6 +26,8 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
               e as Map<String, dynamic>,
             ).copyWith(stockRemaining: 50),
           )
+          .toList()
+          .take(1)
           .toList();
     } catch (e) {
       throw ErrorHandler.handle(e);
