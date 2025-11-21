@@ -23,3 +23,20 @@ class UpdateStock extends ProductEvent {
   @override
   List<Object?> get props => [productId, newStock];
 }
+
+class SearchProducts extends ProductEvent {
+  final String query;
+  SearchProducts(this.query);
+}
+
+class FilterProducts extends ProductEvent {
+  final String? category;
+  final double? minRating;
+  FilterProducts({this.category, this.minRating});
+}
+
+class SortProducts extends ProductEvent {
+  final String sortBy;
+  final bool ascending;
+  SortProducts({required this.sortBy, required this.ascending});
+}

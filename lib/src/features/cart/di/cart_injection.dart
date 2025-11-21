@@ -3,6 +3,7 @@ import 'package:ezmart/src/features/cart/data/datasources/cart_local_datasource.
 import 'package:ezmart/src/features/cart/data/repository/cart_repository_impl.dart';
 import 'package:ezmart/src/features/cart/domain/repository/cart_repository.dart';
 import 'package:ezmart/src/features/cart/domain/usecases/add_to_cart.dart';
+import 'package:ezmart/src/features/cart/domain/usecases/clear_cart.dart';
 import 'package:ezmart/src/features/cart/domain/usecases/get_cart.dart';
 import 'package:ezmart/src/features/cart/domain/usecases/remove_from_cart.dart';
 import 'package:ezmart/src/features/cart/domain/usecases/update_cart_item.dart';
@@ -36,14 +37,21 @@ Future<void> initCart() async {
   sl.registerLazySingleton<UpdateCartQuantity>(
     () => UpdateCartQuantity(repo: sl<CartRepository>()),
   );
+  sl.registerLazySingleton<ClearCart>(
+    () => ClearCart(repo: sl<CartRepository>()),
+  );
 
-  sl.registerFactory(
-    () => CartBloc(
+ 
+
+  sl.registerCachedFactoryParam<CartBloc, ProductBloc?, void>(
+    (productBloc, _) => CartBloc(
       addToCart: sl<AddToCart>(),
-      getCartItems: sl<GetCartItems>(),
       removeFromCart: sl<RemoveFromCart>(),
       updateCartQty: sl<UpdateCartQuantity>(),
+      getCartItems: sl<GetCartItems>(),
       stockService: sl<ProductStockService>(),
+      productBloc: productBloc,
+      clearCart: sl<ClearCart>(),
     ),
   );
 }

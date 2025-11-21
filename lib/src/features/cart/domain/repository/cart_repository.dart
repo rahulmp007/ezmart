@@ -10,4 +10,6 @@ abstract class CartRepository {
     required int productId,
     required int quantity,
   });
+
+  Future<Either<AppError, Unit>> clearCart();
 }

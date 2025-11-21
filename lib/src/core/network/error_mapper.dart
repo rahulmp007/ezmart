@@ -28,25 +28,6 @@ extension ErrorMapper on ApiStatus {
           technicalMessage: technicalMessage,
         );
 
-      case ApiStatus.FORBIDDEN:
-        return AuthError(
-          message: ResponseMessage.FORBIDDEN,
-          code: ResponseCode.FORBIDDEN,
-          technicalMessage: technicalMessage,
-
-          requiresUserAction: true,
-        );
-
-      case ApiStatus.UNAUTHORISED:
-        return AuthError(
-          message: ResponseMessage.UNAUTHORISED,
-          code: ResponseCode.UNAUTHORISED,
-          technicalMessage: technicalMessage,
-
-          shouldRetry: true,
-          requiresUserAction: true,
-        );
-
       case ApiStatus.NOT_FOUND:
         return ServerError(
           message: ResponseMessage.NOT_FOUND,

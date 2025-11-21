@@ -7,6 +7,6 @@ class RemoveFromCart extends UseCase<Unit, int> {
   final CartRepository repo;
   RemoveFromCart({required this.repo});
   @override
-  Future<Either<AppError, Unit>> call(int productId) =>
-      repo.removeFromCart(productId);
+  Future<Either<AppError, Unit>> call(int productId) async =>
+      await repo.removeFromCart(productId);
 }

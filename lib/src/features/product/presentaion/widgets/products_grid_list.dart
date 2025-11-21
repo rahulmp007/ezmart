@@ -17,19 +17,22 @@ class ProductsGridListWidget extends StatelessWidget {
 
         final products = state.products;
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(8),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.70,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-          ),
-          itemCount: 1,
-          // products.length,
-          itemBuilder: (context, index) {
-            return ProductCard(product: products[index]);
-          },
+        return OrientationBuilder(
+          builder: (context,orientation) {
+            return GridView.builder(
+              padding: const EdgeInsets.all(8),
+              gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: orientation == Orientation.portrait ?  2 : 4,
+                childAspectRatio: 0.70,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                return ProductCard(product: products[index]);
+              },
+            );
+          }
         );
       },
     );

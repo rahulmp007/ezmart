@@ -1,4 +1,3 @@
-import 'package:ezmart/src/features/cart/domain/entity/cart_item.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 

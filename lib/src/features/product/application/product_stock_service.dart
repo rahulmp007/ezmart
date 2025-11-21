@@ -1,9 +1,6 @@
 import 'dart:developer';
 
 import 'package:ezmart/src/features/product/domain/respository/product_repository.dart';
-import 'package:ezmart/src/features/product/domain/usecases/get_product_by_id.dart';
-import 'package:ezmart/src/features/product/domain/usecases/params/update_stock_params.dart';
-import 'package:ezmart/src/features/product/domain/usecases/update_stock.dart';
 
 class ProductStockService {
   final ProductRepository repository;

@@ -1,6 +1,5 @@
 import 'package:ezmart/src/core/service/local_storage.dart';
 import 'package:ezmart/src/features/cart/data/models/cart_item_model.dart';
-import 'package:hive/hive.dart';
 
 abstract class CartLocalDataSource {
   Future<List<CartItemModel>> getCartItems();
@@ -32,8 +31,9 @@ class CartLocalDataSourceImpl implements CartLocalDataSource {
   }
 
   @override
-  Future<void> removeAllCartItems() {
-    throw UnimplementedError();
+  Future<void> removeAllCartItems() async {
+    final box = await localStorageService.openBox<CartItemModel>(_boxName);
+    await box.clear();
   }
 
   @override

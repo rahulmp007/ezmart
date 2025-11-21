@@ -15,7 +15,6 @@ class ApiClient {
       ),
     );
 
-    // Logging Interceptor
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -40,7 +39,6 @@ class ApiClient {
 
   factory ApiClient() => _singleton ??= ApiClient._internal();
 
-  /// GET with optional cancel token
   Future get({required String url}) async {
     try {
       final response = await _dio.get(url);
@@ -51,7 +49,6 @@ class ApiClient {
     }
   }
 
-  /// POST with optional cancel token
   Future post({
     required String url,
     required Map<String, dynamic> data,
@@ -69,7 +66,6 @@ class ApiClient {
     }
   }
 
-  /// PUT with optional cancel token
   Future put({
     required String url,
     Map<String, dynamic>? data,
@@ -87,7 +83,6 @@ class ApiClient {
     }
   }
 
-  /// Dispose Singleton
   void dispose() {
     _singleton = null;
   }

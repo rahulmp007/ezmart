@@ -8,6 +8,6 @@ class GetCartItems extends UseCase<List<CartItem>, NoParams> {
   final CartRepository repo;
   GetCartItems({required this.repo});
   @override
-  Future<Either<AppError, List<CartItem>>> call(NoParams p) =>
-      repo.getCartItems();
+  Future<Either<AppError, List<CartItem>>> call(NoParams p) async =>
+      await repo.getCartItems();
 }

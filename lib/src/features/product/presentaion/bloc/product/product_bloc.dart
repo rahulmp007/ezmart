@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:ezmart/src/core/error/failure.dart';
 import 'package:ezmart/src/core/usecase/usecase.dart';
+import 'package:ezmart/src/features/product/domain/entity/product.dart';
 import 'package:ezmart/src/features/product/domain/usecases/get_product_by_id.dart';
 import 'package:ezmart/src/features/product/domain/usecases/get_products.dart';
 import 'package:ezmart/src/features/product/domain/usecases/params/update_stock_params.dart';
@@ -15,6 +14,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetProductByIdUseCase getProductById;
   final UpdateStockUseCase updateStock;
 
+  List<Product> _allProducts = [];
+
+  String _searchQuery = '';
+
   ProductBloc({
     required this.getProducts,
     required this.getProductById,
@@ -24,6 +27,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<RefreshProductsEvent>(_onRefreshProducts);
     on<LoadProductById>(_onLoadProductById);
     on<UpdateStock>(_onUpdateStock);
+
+    on<SearchProducts>(_onSearchProducts);
   }
 
   Future<void> _onLoadProducts(
@@ -31,12 +36,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(ProductLoading());
-    log('loading   fetching paroducts again....');
     final res = await getProducts(NoParams());
-    res.fold(
-      (l) => emit(ProductError(_mapFailureToMsg(l))),
-      (products) => emit(ProductsLoaded(products)),
-    );
+    res.fold((l) => emit(ProductError(_mapFailureToMsg(l))), (products) {
+      _allProducts = products;
+      emit(ProductsLoaded(_applyFilters()));
+    });
   }
 
   Future<void> _onRefreshProducts(
@@ -63,7 +67,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     UpdateStock event,
     Emitter<ProductState> emit,
   ) async {
-    // Make domain call
     final res = await updateStock(
       params: UpdateStockParams(
         productId: event.productId,
@@ -72,23 +75,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     );
 
     res.fold((l) => emit(ProductError(_mapFailureToMsg(l))), (_) {
-      // Update stock locally
+      _allProducts = _allProducts.map((p) {
+        if (p.id == event.productId) {
+          return p.copyWith(stockRemaining: event.newStock);
+        }
+        return p;
+      }).toList();
+
       if (state is ProductsLoaded) {
-        final current = (state as ProductsLoaded).products;
-
-        final updated = current.map((p) {
-          if (p.id == event.productId) {
-            return p.copyWith(stockRemaining: event.newStock);
-          }
-          return p;
-        }).toList();
-
-        emit(ProductsLoaded(updated));
+        emit(ProductsLoaded(_applyFilters()));
       }
 
       if (state is ProductLoaded) {
         final current = (state as ProductLoaded).product;
-
         if (current.id == event.productId) {
           emit(ProductLoaded(current.copyWith(stockRemaining: event.newStock)));
         }
@@ -97,4 +96,26 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   String _mapFailureToMsg(AppError failure) => failure.message;
+
+  void _onSearchProducts(SearchProducts event, Emitter<ProductState> emit) {
+    _searchQuery = event.query;
+    if (state is ProductsLoaded) {
+      emit(ProductsLoaded(_applyFilters()));
+    }
+  }
+
+  List<Product> _applyFilters() {
+    List<Product> filtered = List.from(_allProducts);
+
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((p) {
+        final q = _searchQuery.toLowerCase();
+        return (p.title?.toLowerCase().contains(q) ?? false) ||
+            (p.description?.toLowerCase().contains(q) ?? false) ||
+            (p.id.toString().contains(q));
+      }).toList();
+    }
+
+    return filtered;
+  }
 }

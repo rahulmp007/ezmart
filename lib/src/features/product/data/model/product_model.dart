@@ -1,5 +1,4 @@
 import 'package:ezmart/src/features/product/data/model/rating_model.dart';
-import 'package:ezmart/src/features/product/domain/entity/product.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 

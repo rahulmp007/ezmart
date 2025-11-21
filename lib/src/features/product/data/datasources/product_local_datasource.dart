@@ -27,15 +27,12 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
       log('saving : $p');
       await box.put(p.id, p);
     }
-
-    log('items in local db : ${box.values.length}');
   }
 
   @override
   Future<List<ProductModel>> getCachedProducts() async {
     final box = await localStorageService.openBox<ProductModel>(_productBox);
 
-    log('CACHED items ---> ${box.values}');
     return box.values.toList();
   }
 
@@ -47,9 +44,6 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
 
     final updatedProduct = currentProduct.copyWith(stockRemaining: newStock);
 
-    log(
-      "SAVING PRODUCT WITH ID : $productId WITH NEW STOCK VALUE : $updatedProduct",
-    );
     await localStorageService.put(_productBox, productId, updatedProduct);
   }
 

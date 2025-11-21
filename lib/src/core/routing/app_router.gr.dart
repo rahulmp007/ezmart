@@ -21,11 +21,24 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const CartPage(),
       );
     },
+    OrderConfirmation.name: (routeData) {
+      final args = routeData.argsAs<OrderConfirmationArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: OrderConfirmationPage(
+          key: args.key,
+          order: args.order,
+        ),
+      );
+    },
     ProductDetail.name: (routeData) {
       final args = routeData.argsAs<ProductDetailArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: ProductDetailPage(key: args.key, product: args.product),
+        child: ProductDetailPage(
+          key: args.key,
+          product: args.product,
+        ),
       );
     },
     ProductListing.name: (routeData) {
@@ -47,11 +60,52 @@ abstract class _$AppRouter extends RootStackRouter {
 /// [CartPage]
 class CartList extends PageRouteInfo<void> {
   const CartList({List<PageRouteInfo>? children})
-    : super(CartList.name, initialChildren: children);
+      : super(
+          CartList.name,
+          initialChildren: children,
+        );
 
   static const String name = 'CartList';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [OrderConfirmationPage]
+class OrderConfirmation extends PageRouteInfo<OrderConfirmationArgs> {
+  OrderConfirmation({
+    Key? key,
+    required Order order,
+    List<PageRouteInfo>? children,
+  }) : super(
+          OrderConfirmation.name,
+          args: OrderConfirmationArgs(
+            key: key,
+            order: order,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'OrderConfirmation';
+
+  static const PageInfo<OrderConfirmationArgs> page =
+      PageInfo<OrderConfirmationArgs>(name);
+}
+
+class OrderConfirmationArgs {
+  const OrderConfirmationArgs({
+    this.key,
+    required this.order,
+  });
+
+  final Key? key;
+
+  final Order order;
+
+  @override
+  String toString() {
+    return 'OrderConfirmationArgs{key: $key, order: $order}';
+  }
 }
 
 /// generated route for
@@ -62,20 +116,25 @@ class ProductDetail extends PageRouteInfo<ProductDetailArgs> {
     required Product product,
     List<PageRouteInfo>? children,
   }) : super(
-         ProductDetail.name,
-         args: ProductDetailArgs(key: key, product: product),
-         initialChildren: children,
-       );
+          ProductDetail.name,
+          args: ProductDetailArgs(
+            key: key,
+            product: product,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'ProductDetail';
 
-  static const PageInfo<ProductDetailArgs> page = PageInfo<ProductDetailArgs>(
-    name,
-  );
+  static const PageInfo<ProductDetailArgs> page =
+      PageInfo<ProductDetailArgs>(name);
 }
 
 class ProductDetailArgs {
-  const ProductDetailArgs({this.key, required this.product});
+  const ProductDetailArgs({
+    this.key,
+    required this.product,
+  });
 
   final Key? key;
 
@@ -91,7 +150,10 @@ class ProductDetailArgs {
 /// [ProductListPage]
 class ProductListing extends PageRouteInfo<void> {
   const ProductListing({List<PageRouteInfo>? children})
-    : super(ProductListing.name, initialChildren: children);
+      : super(
+          ProductListing.name,
+          initialChildren: children,
+        );
 
   static const String name = 'ProductListing';
 
@@ -102,7 +164,10 @@ class ProductListing extends PageRouteInfo<void> {
 /// [Splash]
 class SplashRoute extends PageRouteInfo<void> {
   const SplashRoute({List<PageRouteInfo>? children})
-    : super(SplashRoute.name, initialChildren: children);
+      : super(
+          SplashRoute.name,
+          initialChildren: children,
+        );
 
   static const String name = 'SplashRoute';
 

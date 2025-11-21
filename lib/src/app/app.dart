@@ -1,16 +1,18 @@
+import 'package:ezmart/src/core/routing/app_router.dart';
+import 'package:ezmart/src/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class Imagines extends StatelessWidget {
-  const Imagines({super.key});
+class EzMart extends StatelessWidget {
+  const EzMart({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final _appRouter = AppRouter();
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: false,
-      builder: (context, child) {
-        return child ?? const SizedBox.shrink();
-      },
+      routerConfig: _appRouter.config(),
+      theme: AppTheme.lightTheme(),
+      title: 'EzMart',
     );
   }
 }

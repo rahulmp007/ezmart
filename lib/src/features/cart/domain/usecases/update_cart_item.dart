@@ -10,8 +10,8 @@ class UpdateCartQuantity implements UseCase<Unit, UpdateCartQuantityParams> {
   UpdateCartQuantity({required this.repo});
 
   @override
-  Future<Either<AppError, Unit>> call(UpdateCartQuantityParams params) {
-    return repo.updateCartQuantity(
+  Future<Either<AppError, Unit>> call(UpdateCartQuantityParams params) async {
+    return await repo.updateCartQuantity(
       productId: params.productId,
       quantity: params.newStock,
     );

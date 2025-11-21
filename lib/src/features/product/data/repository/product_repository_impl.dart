@@ -89,7 +89,7 @@ class ProductRepositoryImpl implements ProductRepository {
       await localDataSource.saveStock(productId, quantity);
       return Right(null);
     } catch (e) {
-      return Left(CacheError(message: ''));
+      return Left(CacheError(message: e.toString()));
     }
   }
 }

@@ -1,11 +1,12 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:ezmart/src/core/routing/app_router.dart';
 import 'package:ezmart/src/core/widgets/cart_icon.dart';
+import 'package:ezmart/src/core/widgets/toggle_theme.dart';
 import 'package:ezmart/src/features/cart/presentaion/bloc/cart/cart_bloc.dart';
 import 'package:ezmart/src/features/product/presentaion/bloc/product/product_bloc.dart';
 import 'package:ezmart/src/features/product/presentaion/bloc/product/product_event.dart';
 import 'package:ezmart/src/features/product/presentaion/bloc/product/product_state.dart';
 import 'package:ezmart/src/features/product/presentaion/widgets/products_grid_list.dart';
+import 'package:ezmart/src/features/product/presentaion/widgets/search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,7 +34,15 @@ class _ProductListPageState extends State<ProductListPage> {
         title: const Text('Products'),
         scrolledUnderElevation: 0,
         actions: [
-          Padding(padding: const EdgeInsets.only(right: 16), child: CartIcon()),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: ThemeToggle(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: CartIcon(),
+          ),
+          
         ],
       ),
       body: RefreshIndicator(
@@ -41,24 +50,37 @@ class _ProductListPageState extends State<ProductListPage> {
           context.read<ProductBloc>().add(LoadProducts());
         },
         child: SafeArea(
-          child: BlocBuilder<ProductBloc, ProductState>(
-            builder: (context, state) {
-              if (state is ProductInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state is ProductsLoaded) {
-                return ProductsGridListWidget();
-              }
-              if (state is ProductError) {
-                return Center(
-                  child: Text(
-                    state.message,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              SearchWidget(),
+
+              SizedBox(height: 10),
+              Expanded(
+                child: BlocBuilder<ProductBloc, ProductState>(
+                  builder: (context, state) {
+                    if (state is ProductInitial) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (state is ProductsLoaded) {
+                      if (state.products.isEmpty) {
+                        return Center(child: Text('Product not found...'));
+                      }
+                      return ProductsGridListWidget();
+                    }
+                    if (state is ProductError) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

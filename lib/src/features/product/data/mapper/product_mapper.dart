@@ -17,7 +17,6 @@ class ProductMapper {
     );
   }
 
-  /// Convert from Entity → Model
   static ProductModel toModel(Product entity) {
     return ProductModel(
       id: entity.id,
@@ -26,7 +25,7 @@ class ProductMapper {
       description: entity.description,
       category: entity.category,
       image: entity.image,
-      rating:RatingMapper.toModel(entity.rating),
+      rating: RatingMapper.toModel(entity.rating),
       stockRemaining: entity.stockRemaining,
     );
   }

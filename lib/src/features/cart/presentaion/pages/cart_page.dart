@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:ezmart/src/core/routing/app_router.dart';
 import 'package:ezmart/src/features/cart/presentaion/bloc/cart/cart_bloc.dart';
-import 'package:ezmart/src/features/product/presentaion/bloc/product/product_bloc.dart';
-import 'package:ezmart/src/features/product/presentaion/bloc/product/product_event.dart';
+import 'package:ezmart/src/features/order/presentaion/bloc/order/order_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -66,7 +66,16 @@ class CartPage extends StatelessWidget {
                                   Icons.remove_circle_outline,
                                   color: Colors.red,
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (item.quantity > 1) {
+                                    context.read<CartBloc>().add(
+                                      UpdateQtyEvent(
+                                        item.productId,
+                                        item.quantity - 1,
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                               Text(
                                 '${item.quantity}',
@@ -78,7 +87,14 @@ class CartPage extends StatelessWidget {
                                   Icons.add_circle_outline,
                                   color: Colors.green,
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.read<CartBloc>().add(
+                                    UpdateQtyEvent(
+                                      item.productId,
+                                      item.quantity + 1,
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -120,7 +136,7 @@ class CartPage extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         offset: const Offset(0, -1),
                         blurRadius: 6,
                       ),
@@ -131,31 +147,68 @@ class CartPage extends StatelessWidget {
                     children: [
                       Text(
                         'Total: ₹${state.total.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Place Order',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      BlocConsumer<OrderBloc, OrderState>(
+                        listener: (context, orderState) {
+                          if (orderState is OrderPlaced) {
+                            context.router.push(
+                              OrderConfirmation(order: orderState.order),
+                            );
+                          } else if (orderState is OrderError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(orderState.message),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, orderState) {
+                          final isLoading = orderState is OrderLoading;
+                          return ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    context.read<OrderBloc>().add(
+                                      PlaceOrderEvent(state.items),
+                                    );
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Place Order',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          );
+                        },
                       ),
                     ],
                   ),

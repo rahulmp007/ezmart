@@ -1,6 +1,9 @@
 import 'dart:developer';
 
+import 'package:ezmart/src/features/cart/domain/usecases/clear_cart.dart';
 import 'package:ezmart/src/features/product/application/product_stock_service.dart';
+import 'package:ezmart/src/features/product/presentaion/bloc/product/product_bloc.dart';
+import 'package:ezmart/src/features/product/presentaion/bloc/product/product_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ezmart/src/core/usecase/usecase.dart';
 import 'package:ezmart/src/features/cart/domain/entity/cart_item.dart';
@@ -18,8 +21,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final RemoveFromCart removeFromCart;
   final UpdateCartQuantity updateCartQty;
   final GetCartItems getCartItems;
+  final ClearCart clearCart;
 
   final ProductStockService stockService;
+  final ProductBloc? productBloc;
 
   CartBloc({
     required this.addToCart,
@@ -27,11 +32,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     required this.updateCartQty,
     required this.getCartItems,
     required this.stockService,
+    required this.productBloc,
+    required this.clearCart,
   }) : super(CartLoading()) {
     on<LoadCartEvent>(_load);
     on<AddCartEvent>(_add);
     on<RemoveCartEvent>(_remove);
     on<UpdateQtyEvent>(_updateQty);
+    on<ClearCartEvent>(_clear);
   }
 
   Future<void> _load(LoadCartEvent event, Emitter emit) async {
@@ -39,7 +47,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final result = await getCartItems(NoParams());
 
     result.fold(
-      (l) => emit(CartError(l.message)),
+      (err) => emit(CartError(err.message)),
       (items) => emit(CartLoaded(items)),
     );
   }
@@ -56,7 +64,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       return;
     }
 
-    await stockService.decrease(item.productId, item.quantity);
+    final newStock = currentStock - item.quantity;
+    productBloc?.add(UpdateStock(item.productId, newStock));
 
     final res = await addToCart(item);
 
@@ -69,8 +78,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     await current.fold((_) {}, (items) async {
       final item = items.firstWhere((e) => e.productId == event.productId);
 
-      log('item : ${item.title} ${item.quantity}');
-      await stockService.increase(item.productId, item.quantity);
+      final currentStock = await stockService.getStock(item.productId);
+
+      final newStock = currentStock + item.quantity;
+      productBloc?.add(UpdateStock(event.productId, newStock));
     });
 
     final res = await removeFromCart(event.productId);
@@ -81,7 +92,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _updateQty(UpdateQtyEvent event, Emitter emit) async {
     final cart = await getCartItems(NoParams());
 
-    cart.fold((_) {}, (items) async {
+    await cart.fold((_) async {}, (items) async {
       final item = items.firstWhere((e) => e.productId == event.productId);
       final oldQty = item.quantity;
       final newQty = event.quantity;
@@ -96,10 +107,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           emit(CartError("Not enough stock"));
           return;
         }
-        await stockService.decrease(item.productId, needed);
+
+        final newStock = currentStock - needed;
+        productBloc?.add(UpdateStock(event.productId, newStock));
       } else {
         final restore = oldQty - newQty;
-        await stockService.increase(item.productId, restore);
+
+        final newStock = currentStock + restore;
+        productBloc?.add(UpdateStock(event.productId, newStock));
       }
     });
 
@@ -111,5 +126,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     );
 
     add(LoadCartEvent());
+  }
+
+  Future<void> _clear(ClearCartEvent event, Emitter emit) async {
+    final res = await clearCart(NoParams());
+    res.fold((l) => emit(CartError(l.message)), (_) => emit(CartLoaded([])));
   }
 }

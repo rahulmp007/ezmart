@@ -81,4 +81,14 @@ class CartRepositoryImpl implements CartRepository {
       return Left(CacheError(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<AppError, Unit>> clearCart() async {
+    try {
+      await localDataSource.removeAllCartItems();
+      return const Right(unit);
+    } catch (e) {
+      return Left(CacheError(message: e.toString()));
+    }
+  }
 }
